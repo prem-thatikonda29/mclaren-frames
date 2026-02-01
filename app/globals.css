@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-mclaren-orange: #ff6a00;
+  --color-carbon-black: #0a0a0a;
+  --color-silver-metallic: #f0f0f0;
+  --color-racing-blue: #003da5;
+
+  --font-sans: var(--font-inter), sans-serif;
+  --font-display: var(--font-orbitron), sans-serif;
+}
+
+body {
+  background-color: var(--color-carbon-black);
+  color: var(--color-silver-metallic);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-mclaren-orange);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e65c00;
+}
