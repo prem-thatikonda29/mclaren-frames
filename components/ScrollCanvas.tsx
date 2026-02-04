@@ -110,7 +110,7 @@ export default function ScrollCanvas() {
       window.removeEventListener("resize", updateSize);
       cancelAnimationFrame(animationId);
     };
-  }, [imagesLoaded, images]);
+  }, [imagesLoaded, images, lenis]);
 
   return (
     <div className="fixed inset-0 w-full h-full z-0 pointer-events-none bg-black">

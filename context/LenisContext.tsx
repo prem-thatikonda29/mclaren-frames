@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
@@ -12,6 +12,7 @@ const LenisContext = createContext<LenisContextType | undefined>(undefined);
 
 export function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const [, setLenisInitialized] = useState(false);
 
   useEffect(() => {
     // Initialize Lenis
@@ -37,6 +38,9 @@ export function LenisProvider({ children }: { children: ReactNode }) {
     };
 
     const animationId = requestAnimationFrame(raf);
+
+    // Notify that lenis is ready
+    setLenisInitialized(true);
 
     return () => {
       cancelAnimationFrame(animationId);

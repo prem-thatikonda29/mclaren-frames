@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Orbitron } from "next/font/google"; // Car-geeky tech font
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/context/LenisContext";
 import { ScrollProvider } from "@/context/ScrollContext";
@@ -7,12 +7,6 @@ import { ScrollProvider } from "@/context/ScrollContext";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
-  subsets: ["latin"],
-  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${orbitron.variable} antialiased bg-black text-white selection:bg-mclaren-orange selection:text-black`}
+        className={`${inter.variable} antialiased bg-black text-white selection:bg-mclaren-orange selection:text-black`}
       >
         <LenisProvider>
           <ScrollProvider>{children}</ScrollProvider>
