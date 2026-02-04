@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useScroll } from "@/context/ScrollContext";
@@ -52,6 +52,8 @@ const eras = [
 export default function BrandHistory() {
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const [currentEra, setCurrentEra] = useState(0);
   const { registerSection, unregisterSection } = useScroll();
 
   // Register section with scroll context
@@ -87,18 +89,18 @@ export default function BrandHistory() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=3000", // Tighter scroll distance for faster feel
+          end: "+=3000",
           pin: true,
           scrub: 1,
         },
       });
 
+      timelineRef.current = tl;
+
       // --- Sequence Logic ---
       eras.forEach((_, i) => {
-        // If it's not the last era, transition to the next
         if (i < eras.length - 1) {
           // 1. Sync Zoom & Morph
-          // Era Background Scales Down AND Car Zooms simultaneously
           tl.to(eraImages[i], {
             scale: 0.9,
             duration: 1.5,
@@ -106,27 +108,26 @@ export default function BrandHistory() {
           }).to(
             motionCars[i],
             { x: "100vw", duration: 1.5, ease: "power2.inOut" },
-            "<", // Start exact same time
+            "<",
           );
 
           // 2. Crossfade to Next Era
-          // Current fades out, Next fades in
           tl.to(eraSections[i], { opacity: 0, duration: 0.5 })
             .to(
               eraSections[i + 1],
               { opacity: 1, zIndex: 10, duration: 0.5 },
               "<",
             )
-            // Next BG starts slightly zoomed in (1.2) and settles to 1.1
             .fromTo(
               eraImages[i + 1],
               { scale: 1.2 },
               { scale: 1.1, duration: 1 },
               "<",
             );
+
+          // Update state after transition
+          tl.call(() => setCurrentEra(i + 1));
         } else {
-          // Final Era (Modern)
-          // ONLY Car Zoom. No BG Scale. No Text Fade.
           tl.to(motionCars[i], {
             x: "100vw",
             duration: 1.5,
@@ -139,6 +140,19 @@ export default function BrandHistory() {
     return () => ctx.revert();
   }, []);
 
+  const handleEraClick = (targetEra: number) => {
+    const tl = timelineRef.current;
+    if (!tl) return;
+
+    const progress = targetEra / (eras.length - 1);
+
+    gsap.to(tl, {
+      progress: progress,
+      duration: 1,
+      ease: "power2.inOut",
+    });
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -146,6 +160,36 @@ export default function BrandHistory() {
       className="relative bg-carbon-black text-white overflow-hidden h-screen"
     >
       <div ref={containerRef} className="w-full h-full relative">
+        {/* Era Navigation Dots */}
+        <div className="fixed right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
+          {eras.map((era, index) => (
+            <div
+              key={era.id}
+              className="relative group cursor-pointer"
+              onClick={() => handleEraClick(index)}
+            >
+              {/* Dot */}
+              <div
+                className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
+                  currentEra === index
+                    ? "bg-mclaren-orange border-mclaren-orange scale-125"
+                    : "bg-transparent border-white/30 hover:border-white/60"
+                }`}
+              />
+              {/* Year label */}
+              <div
+                className={`absolute right-6 top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-display text-white/80 transition-opacity duration-200 ${
+                  currentEra === index
+                    ? "opacity-100"
+                    : "opacity-0 group-hover:opacity-100"
+                }`}
+              >
+                {era.year}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {eras.map((era, index) => (
           <div
             key={era.id}
@@ -197,11 +241,11 @@ export default function BrandHistory() {
                 </p>
               </div>
 
-              <div className="relative p-8 md:p-12 border-l-4 border-mclaren-orange bg-white/10 backdrop-blur-md shadow-2xl">
-                <blockquote className="text-xl md:text-2xl lg:text-3xl font-light italic leading-normal text-white">
+              <div className="relative p-8 md:p-12 border-l-4 border-mclaren-orange/50 bg-white/10 backdrop-blur-md shadow-2xl group hover:bg-white/15 hover:border-l-[6px] transition-all duration-300">
+                <blockquote className="text-xl md:text-2xl lg:text-3xl font-light italic leading-normal text-white/80 group-hover:text-mclaren-orange/90 transition-colors">
                   "{era.quote}"
                 </blockquote>
-                <footer className="mt-6 text-mclaren-orange font-bold uppercase tracking-wider">
+                <footer className="mt-6 text-mclaren-orange font-bold uppercase tracking-wider group-hover:tracking-[0.3em] transition-all duration-300">
                   — {era.author}
                 </footer>
               </div>
