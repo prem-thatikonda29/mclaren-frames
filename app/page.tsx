@@ -1,12 +1,21 @@
+"use client";
+
+import { useKeyboardNav } from "@/hooks/useKeyboardNav";
 import HeroSection from "@/components/HeroSection";
 import BrandHistory from "@/components/BrandHistory";
 import F1Racing from "@/components/F1Racing";
 import CarModels from "@/components/CarModels";
 import ScrollCanvas from "@/components/ScrollCanvas";
+import LoadingScreen from "@/components/LoadingScreen";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
+  useKeyboardNav();
+
   return (
     <main className="flex flex-col min-h-screen bg-transparent">
+      <LoadingScreen />
+      <Navbar />
       <ScrollCanvas />
 
       {/* Content wrapper with z-index to sit above canvas */}

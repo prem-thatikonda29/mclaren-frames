@@ -2,12 +2,25 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useScroll } from "@/context/ScrollContext";
 
 export default function CarModels() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { registerSection, unregisterSection } = useScroll();
+
+  // Register section with scroll context
+  useEffect(() => {
+    if (sectionRef.current) {
+      registerSection("models", sectionRef.current);
+    }
+    return () => {
+      if (sectionRef.current) {
+        unregisterSection("models");
+      }
+    };
+  }, [registerSection, unregisterSection]);
 
   useEffect(() => {
     let ctx = gsap.context(() => {}); // Initialize empty context
@@ -68,6 +81,7 @@ export default function CarModels() {
   return (
     <section
       ref={sectionRef}
+      id="models"
       className="bg-carbon-black text-white h-auto md:h-screen overflow-hidden flex flex-col justify-center relative py-20 md:py-0"
     >
       <div className="absolute top-10 left-6 md:left-20 z-10">

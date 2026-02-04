@@ -1,15 +1,26 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useScroll } from "@/context/ScrollContext";
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { registerSection, unregisterSection } = useScroll();
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const heroTitleRef = useRef<HTMLDivElement>(null);
+
+  // Register section with scroll context
+  useEffect(() => {
+    if (containerRef.current) {
+      registerSection("hero", containerRef.current);
+    }
+    return () => {
+      if (containerRef.current) {
+        unregisterSection("hero");
+      }
+    };
+  }, [registerSection, unregisterSection]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -61,7 +72,7 @@ export default function HeroSection() {
 
   return (
     // Height is 500vh to ensure we have enough scroll space for the frame animation (defined in ScrollCanvas as 400vh scroll)
-    <div ref={containerRef} className="relative w-full h-[500vh] z-10">
+    <div ref={containerRef} id="hero" className="relative w-full h-[500vh] z-10">
       {/* Main Title Screen - Scrolls up naturally */}
       <div
         ref={heroTitleRef}

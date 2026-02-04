@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Orbitron } from "next/font/google"; // Car-geeky tech font
 import "./globals.css";
+import { LenisProvider } from "@/context/LenisContext";
+import { ScrollProvider } from "@/context/ScrollContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${orbitron.variable} antialiased bg-black text-white selection:bg-mclaren-orange selection:text-black`}
       >
-        {children}
+        <LenisProvider>
+          <ScrollProvider>{children}</ScrollProvider>
+        </LenisProvider>
       </body>
     </html>
   );

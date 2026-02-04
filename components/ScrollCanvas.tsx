@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useScroll } from "@/context/ScrollContext";
+import { useLenis } from "@/context/LenisContext";
 
 const frameCount = 192;
 
@@ -8,6 +10,8 @@ export default function ScrollCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const { setFrameLoadProgress, setImagesReady } = useScroll();
+  const lenis = useLenis();
 
   // Preload images
   useEffect(() => {
@@ -21,19 +25,25 @@ export default function ScrollCanvas() {
       img.src = `/frames/ezgif-frame-${frameNumber}.jpg`;
       img.onload = () => {
         loadedCount++;
+        setFrameLoadProgress(Math.round((loadedCount / frameCount) * 100));
         if (loadedCount === frameCount) {
           setImagesLoaded(true);
+          setImagesReady(true);
         }
       };
       // Handle error just in case, though we expect files to exist
       img.onerror = () => {
         loadedCount++;
-        if (loadedCount === frameCount) setImagesLoaded(true);
+        setFrameLoadProgress(Math.round((loadedCount / frameCount) * 100));
+        if (loadedCount === frameCount) {
+          setImagesLoaded(true);
+          setImagesReady(true);
+        }
       };
       loadedImages.push(img);
     }
     setImages(loadedImages);
-  }, []);
+  }, [setFrameLoadProgress, setImagesReady]);
 
   useEffect(() => {
     if (!imagesLoaded || !canvasRef.current || images.length === 0) return;
@@ -57,7 +67,7 @@ export default function ScrollCanvas() {
       // e.g., 0 to 4 * window.innerHeight
 
       const scrollHeight = window.innerHeight * 4;
-      const scrollPos = window.scrollY;
+      const scrollPos = lenis?.scroll ?? 0;
 
       // Calculate fraction 0 to 1 based on the target scroll height
       const scrollFraction = Math.max(0, Math.min(1, scrollPos / scrollHeight));

@@ -1,11 +1,25 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import { gsap } from "@/lib/gsap";
+import { useScroll } from "@/context/ScrollContext";
 
 export default function F1Racing() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const { registerSection, unregisterSection } = useScroll();
+
+  // Register section with scroll context
+  useEffect(() => {
+    if (sectionRef.current) {
+      registerSection("racing", sectionRef.current);
+    }
+    return () => {
+      if (sectionRef.current) {
+        unregisterSection("racing");
+      }
+    };
+  }, [registerSection, unregisterSection]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -36,6 +50,7 @@ export default function F1Racing() {
   return (
     <section
       ref={sectionRef}
+      id="racing"
       className="py-12 md:py-24 px-6 md:px-20 bg-[#111] relative border-t border-white/5 overflow-hidden"
     >
       <div className="absolute top-0 right-0 w-1/3 h-full bg-mclaren-orange/5 skew-x-12 transform origin-top-right" />

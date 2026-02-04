@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useScroll } from "@/context/ScrollContext";
 
 const eras = [
   {
@@ -52,6 +52,19 @@ const eras = [
 export default function BrandHistory() {
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { registerSection, unregisterSection } = useScroll();
+
+  // Register section with scroll context
+  useEffect(() => {
+    if (sectionRef.current) {
+      registerSection("history", sectionRef.current);
+    }
+    return () => {
+      if (sectionRef.current) {
+        unregisterSection("history");
+      }
+    };
+  }, [registerSection, unregisterSection]);
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -129,6 +142,7 @@ export default function BrandHistory() {
   return (
     <section
       ref={sectionRef}
+      id="history"
       className="relative bg-carbon-black text-white overflow-hidden h-screen"
     >
       <div ref={containerRef} className="w-full h-full relative">
